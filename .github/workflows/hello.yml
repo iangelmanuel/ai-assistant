@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  hello_worl:
+  hello_world:
     runs-on: ubuntu-latest
 
     steps:
