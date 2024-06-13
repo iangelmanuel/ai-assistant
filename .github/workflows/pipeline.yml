@@ -22,7 +22,7 @@ jobs:
           version: '8.14.1'
 
       - name: Install dependencies
-        run: pnpm install --no-audit --no-fund --no-optional
+        run: pnpm install
 
       - name: Lint
         run: pnpm run lint
