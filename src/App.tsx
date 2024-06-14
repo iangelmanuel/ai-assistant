@@ -6,7 +6,7 @@ export default function App() {
   return (
     <>
       <Header />
-      <main className="grid grid-cols-1 max-w-screen-xl mx-auto place-content-center w-full h-[100dvh]">
+      <main className="w-full h-[100dvh]">
         <Chat />
       </main>
       <Footer />

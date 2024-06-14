@@ -92,7 +92,7 @@ export function Chat() {
     progress.text.startsWith('Start to fetch')
 
   return (
-    <section>
+    <section className="max-w-screen-sm mx-auto mt-5">
       <form onSubmit={handleSubmit(sendMessage)}>
         <Card className={cn(errors.content && 'border-red-500')}>
           <ChatField

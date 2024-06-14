@@ -13,7 +13,7 @@ type Props = {
 
 export function ChatInput({ register, errors, isProgress }: Props) {
   return (
-    <CardContent className="flex">
+    <CardContent className="flex gap-x-2">
       <Input
         {...register('content', { required: 'Message is required' })}
         className={cn(errors.content && 'border-red-500')}

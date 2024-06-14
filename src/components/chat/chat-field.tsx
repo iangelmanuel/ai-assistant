@@ -9,7 +9,7 @@ type Props = {
 
 export function ChatField({ chatData, contentChunk }: Props) {
   return (
-    <CardHeader className="space-y-5 h-[800px] max-h-[800px] overflow-y-auto">
+    <CardHeader className="space-y-5 h-[700px] max-h-[700px] overflow-y-auto">
       <div className="flex items-center gap-2 pb-1">
         <Avatar>
           <AvatarImage
@@ -35,10 +35,10 @@ export function ChatField({ chatData, contentChunk }: Props) {
               }
               alt="Avatar"
             />
-            <AvatarFallback>USER</AvatarFallback>
+            <AvatarFallback>YOU</AvatarFallback>
           </Avatar>
 
-          <div className="w-[800px]">
+          <div className="w-[500px]">
             <p
               className={`${data.role === 'user' ? 'bg-sky-600 dark:bg-primary text-white text-end' : 'bg-gray-300 dark:bg-secondary'} py-2 px-5 rounded-xl`}
             >
