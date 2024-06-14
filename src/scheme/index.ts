@@ -5,5 +5,5 @@ export const ChatScheme = z.object({
   content: z
     .string({ message: 'El mensaje es requerido' })
     .min(1, { message: 'El mensaje debe tener minimo 1 caracter' })
-    .max(100, { message: 'El mensaje debe tener menos de 100 caracteres' })
+    .max(500, { message: 'El mensaje debe tener menos de 500 caracteres' })
 })
