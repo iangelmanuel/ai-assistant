@@ -4,26 +4,24 @@ import { toast } from 'sonner'
 
 type EngineCreteChatType = {
   engine: MLCEngine | undefined
-  data: Chat
   chatData: Chat[]
 }
 
 export async function engineCreateChat({
   engine,
-  data,
   chatData
 }: EngineCreteChatType) {
-  if (!engine) return
-
   try {
+    if (!engine) return
+
     const reply = await engine.chat.completions.create({
-      messages: [...chatData, data]
+      messages: chatData
     })
-    return reply.choices[0].message.content
+    const result = reply.choices[0].message.content
+    return result
   } catch (error) {
-    console.log(error)
-    return toast.error('An error has ocurred', {
-      description: 'Error creating chat',
+    toast.error('An error has ocurred', {
+      description: 'No choices were found',
       duration: 5000,
       position: 'top-right'
     })
