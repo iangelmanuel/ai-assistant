@@ -14,7 +14,7 @@ export const ChatErrors = ({ errors, progress }: Props) => {
     <CardFooter className="flex justify-between items-center">
       {progress && (
         <div className="flex items-center">
-          <p className="text-xs text-gray-400">{progress.text}</p>
+          <p className="text-xs text-slate-400">{progress.text}</p>
         </div>
       )}
       {errors.content && (

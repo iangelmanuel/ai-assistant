@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CardHeader } from '@/components/ui/card'
 import { Chat } from '@/types'
+import { Spinner } from '../spinner'
 import { ChatPanel } from './chat-panel'
 
 type Props = {
@@ -12,7 +13,7 @@ type Props = {
 export function ChatField({ chatData, contentChunk, loading }: Props) {
   return (
     <CardHeader className="space-y-5 h-[700px] max-h-[700px] overflow-y-auto">
-      <div className="flex items-center gap-2 pb-1">
+      <article className="flex items-center gap-2 pb-1">
         <Avatar>
           <AvatarImage
             src="https://cdn.icon-icons.com/icons2/1371/PNG/512/robot02_90810.png"
@@ -21,12 +22,10 @@ export function ChatField({ chatData, contentChunk, loading }: Props) {
           <AvatarFallback>USER</AvatarFallback>
         </Avatar>
         <h2 className="font-bold">AI Assistant</h2>
-      </div>
+      </article>
 
       {loading ? (
-        <div className="flex items-center justify-center h-full">
-          <p className="text-center">Loading...</p>
-        </div>
+        <Spinner />
       ) : (
         chatData.map((data, i) => (
           <ChatPanel

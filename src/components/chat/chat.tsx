@@ -70,15 +70,12 @@ export function Chat() {
 
     const sendDataToEngine = {
       engine,
-      data: result.data,
       chatData
     }
     const reply = await engineCreateChat(sendDataToEngine)
 
-    if (reply) {
-      setContentChunk(reply.toString())
-    }
-
+    if (!reply) return
+    setContentChunk(reply)
     const botMessage: ChatType = {
       role: 'system',
       content: contentChunk
