@@ -1,9 +1,13 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { INITIAL_VALUES } from '@/const/form-default-value'
-import { INITIAL_PROGRESS_VALUES } from '@/const/initial-progress-values'
-import { sendMessageHandler } from '@/handlers/send-message-handler'
+import {
+  INITIAL_PROGRESS_VALUES,
+  INITIAL_VALUES
+} from '@/const/initials-values'
+import { engineCreateChat } from '@/handlers/engine-create-chat'
+import { initEngine } from '@/handlers/init-engine'
 import { cn } from '@/lib/utils'
+import { ChatScheme } from '@/scheme'
 import type { ChatForm, Chat as ChatType } from '@/types'
 import type { InitProgressReport, MLCEngine } from '@mlc-ai/web-llm'
 import React from 'react'
@@ -20,6 +24,20 @@ export function Chat() {
     INITIAL_PROGRESS_VALUES
   )
   const [contentChunk, setContentChunk] = React.useState<string>('')
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const initSessionEngine = async () => {
+      const engineResult = await initEngine({
+        initProgressCallback: (progress) => {
+          setProgress(progress)
+        }
+      })
+      setEngine(engineResult)
+      setLoading(false)
+    }
+    initSessionEngine()
+  }, [])
 
   const {
     register,
@@ -30,74 +48,56 @@ export function Chat() {
     defaultValues: INITIAL_VALUES
   })
 
-  const sendMessage = async (formData: ChatForm) => {
+  const onSendMessage = async (formData: ChatForm) => {
     const data: ChatType = {
       role: 'user',
       content: formData.content
     }
-    setChatData([...chatData, data])
     reset()
-    await engineHandler(data)
-  }
+    const result = ChatScheme.safeParse(data)
 
-  const engineHandler = async (data: ChatType) => {
-    if (!engine) {
-      const result = await sendMessageHandler(data, {
-        initProgressCallback: (initProgress) => setProgress(initProgress)
+    if (!result.success) {
+      toast.error('An error has ocurred', {
+        description: result.error.issues
+          .map((issue) => issue.message)
+          .join(', '),
+        position: 'top-right',
+        duration: 5000
       })
-      if (result.ok && result.engine) {
-        setEngine(result.engine)
-        toast.success('Engine loaded', {
-          description: 'Engine loaded successfully.',
-          duration: 5000,
-          position: 'top-right'
-        })
-      } else {
-        toast.error('Error loading engine', {
-          description:
-            'Something went wrong loading the engine, please try again later.',
-          duration: 5000,
-          position: 'top-right'
-        })
-      }
-    } else {
-      setContentChunk('')
-      const messages = chatData.map((message) => ({
-        role: message.role,
-        content: message.content
-      }))
-
-      const reply = await engine?.chat.completions.create({ messages })
-
-      reply.choices.forEach((choice) => {
-        const content = choice.message.content ?? ''
-        setContentChunk(content)
-      })
-
-      /* for await (const chunk of chunks) {
-        const choice = chunk.choices[0]
-        const content = choice?.delta?.content ?? ''
-        setContentChunk((prevState) => [...prevState, content])
-      } */
-
-      const botMessage: ChatType = {
-        role: 'system',
-        content: contentChunk
-      }
-      setChatData([...chatData, botMessage])
+      return
     }
+    setChatData([...chatData, result.data])
+
+    const sendDataToEngine = {
+      engine,
+      data: result.data,
+      chatData
+    }
+    const reply = await engineCreateChat(sendDataToEngine)
+
+    if (reply) {
+      setContentChunk(reply.toString())
+    }
+
+    const botMessage: ChatType = {
+      role: 'system',
+      content: contentChunk
+    }
+    setChatData((prevState) => [...prevState, botMessage])
   }
+
   const isProgress =
     progress.text.startsWith('Loading') ||
     progress.text.startsWith('Start to fetch')
 
   return (
     <section className="max-w-screen-sm mx-auto mt-5">
-      <form onSubmit={handleSubmit(sendMessage)}>
+      <form onSubmit={handleSubmit(onSendMessage)}>
         <Card className={cn(errors.content && 'border-red-500')}>
           <ChatField
             chatData={chatData}
             contentChunk={contentChunk}
+            loading={loading}
           />
 
           <ChatInput

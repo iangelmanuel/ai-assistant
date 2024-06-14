@@ -1,13 +1,15 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CardHeader } from '@/components/ui/card'
 import { Chat } from '@/types'
+import { ChatPanel } from './chat-panel'
 
 type Props = {
   chatData: Chat[]
   contentChunk: string
+  loading: boolean
 }
 
-export function ChatField({ chatData, contentChunk }: Props) {
+export function ChatField({ chatData, contentChunk, loading }: Props) {
   return (
     <CardHeader className="space-y-5 h-[700px] max-h-[700px] overflow-y-auto">
       <div className="flex items-center gap-2 pb-1">
@@ -21,32 +23,19 @@ export function ChatField({ chatData, contentChunk }: Props) {
         <h2 className="font-bold">AI Assistant</h2>
       </div>
 
-      {chatData.map((data, i) => (
-        <article
-          key={`messages-${i}-${data.role}-${data.content}`}
-          className={`flex flex-col gap-y-2 ${data.role === 'user' ? 'items-end' : 'items-start'}`}
-        >
-          <Avatar>
-            <AvatarImage
-              src={
-                data.role === 'user'
-                  ? 'https://github.com/iangelmanuel.png'
-                  : 'https://cdn.icon-icons.com/icons2/1371/PNG/512/robot02_90810.png'
-              }
-              alt="Avatar"
-            />
-            <AvatarFallback>YOU</AvatarFallback>
-          </Avatar>
-
-          <div className="w-[500px]">
-            <p
-              className={`${data.role === 'user' ? 'bg-sky-600 dark:bg-primary text-white text-end' : 'bg-gray-300 dark:bg-secondary'} py-2 px-5 rounded-xl`}
-            >
-              {data.content ? data.content : contentChunk}
-            </p>
-          </div>
-        </article>
-      ))}
+      {loading ? (
+        <div className="flex items-center justify-center h-full">
+          <p className="text-center">Loading...</p>
+        </div>
+      ) : (
+        chatData.map((data, i) => (
+          <ChatPanel
+            key={i}
+            data={data}
+            contentChunk={contentChunk}
+          />
+        ))
+      )}
     </CardHeader>
   )
 }
