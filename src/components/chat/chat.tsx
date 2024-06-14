@@ -1,11 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import {
-  INITIAL_PROGRESS_VALUES,
-  INITIAL_VALUES
-} from '@/const/initials-values'
+import { INITIAL_VALUES } from '@/const/initials-values'
 import { engineCreateChat } from '@/handlers/engine-create-chat'
-import { initEngine } from '@/handlers/init-engine'
 import { cn } from '@/lib/utils'
 import { ChatScheme } from '@/scheme'
 import type { ChatForm, Chat as ChatType } from '@/types'
@@ -17,27 +13,15 @@ import { ChatErrors } from './chat-errors'
 import { ChatField } from './chat-field'
 import { ChatInput } from './chat-input'
 
-export function Chat() {
-  const [chatData, setChatData] = React.useState<ChatType[]>([])
-  const [engine, setEngine] = React.useState<MLCEngine | undefined>(undefined)
-  const [progress, setProgress] = React.useState<InitProgressReport>(
-    INITIAL_PROGRESS_VALUES
-  )
-  const [contentChunk, setContentChunk] = React.useState<string>('')
-  const [loading, setLoading] = React.useState(true)
+type Props = {
+  engine: MLCEngine | undefined
+  loading: boolean
+  progress: InitProgressReport
+}
 
-  React.useEffect(() => {
-    const initSessionEngine = async () => {
-      const engineResult = await initEngine({
-        initProgressCallback: (progress) => {
-          setProgress(progress)
-        }
-      })
-      setEngine(engineResult)
-      setLoading(false)
-    }
-    initSessionEngine()
-  }, [])
+export function Chat({ engine, loading, progress }: Props) {
+  const [chatData, setChatData] = React.useState<ChatType[]>([])
+  const [contentChunk, setContentChunk] = React.useState<string>('')
 
   const {
     register,
@@ -88,7 +72,7 @@ export function Chat() {
     progress.text.startsWith('Start to fetch')
 
   return (
-    <section className="max-w-screen-sm mx-auto mt-5">
+    <section className="max-w-screen-sm mx-auto my-5">
       <form onSubmit={handleSubmit(onSendMessage)}>
         <Card className={cn(errors.content && 'border-red-500')}>
           <ChatField
