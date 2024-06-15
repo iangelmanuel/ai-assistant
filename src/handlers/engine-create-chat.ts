@@ -13,7 +13,6 @@ export async function engineCreateChat({
 }: EngineCreteChatType) {
   try {
     if (!engine) return
-
     const reply = await engine.chat.completions.create({
       messages: chatData
     })
