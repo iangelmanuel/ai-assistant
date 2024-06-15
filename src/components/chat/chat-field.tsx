@@ -1,18 +1,29 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CardHeader } from '@/components/ui/card'
 import { Chat } from '@/types'
+import React from 'react'
 import { Spinner } from '../spinner'
 import { ChatPanel } from './chat-panel'
 
 type Props = {
   chatData: Chat[]
-  contentChunk: string
   loading: boolean
 }
 
-export function ChatField({ chatData, contentChunk, loading }: Props) {
+export function ChatField({ chatData, loading }: Props) {
+  const scrollRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
+  }, [chatData])
+
   return (
-    <CardHeader className="space-y-5 h-[700px] max-h-[700px] overflow-y-auto">
+    <CardHeader
+      className="space-y-5 h-[700px] max-h-[700px] overflow-y-auto"
+      ref={scrollRef}
+    >
       <article className="flex items-center gap-2 pb-1">
         <Avatar>
           <AvatarImage
@@ -31,7 +42,6 @@ export function ChatField({ chatData, contentChunk, loading }: Props) {
           <ChatPanel
             key={i}
             data={data}
-            contentChunk={contentChunk}
           />
         ))
       )}

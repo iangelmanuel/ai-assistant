@@ -21,7 +21,7 @@ type Props = {
 
 export function Chat({ engine, loading, progress }: Props) {
   const [chatData, setChatData] = React.useState<ChatType[]>([])
-  const [contentChunk, setContentChunk] = React.useState<string>('')
+  // const [contentChunk, setContentChunk] = React.useState<string>('')
 
   const {
     register,
@@ -32,39 +32,33 @@ export function Chat({ engine, loading, progress }: Props) {
     defaultValues: INITIAL_VALUES
   })
 
-  const onSendMessage = async (formData: ChatForm) => {
-    const data: ChatType = {
-      role: 'user',
-      content: formData.content
-    }
+  const onSendMessage = async (content: ChatForm) => {
+    sendMessage(content.content, 'user')
     reset()
-    const result = ChatScheme.safeParse(data)
+    const sendDataToEngine = { engine, chatData }
+    const reply = await engineCreateChat(sendDataToEngine)
+    if (!reply) return
+    // setContentChunk(reply)
+    sendMessage(reply, 'system')
+  }
+
+  const sendMessage = (
+    content: ChatType['content'],
+    role: ChatType['role']
+  ) => {
+    const message: ChatType = { role, content }
+    const result = ChatScheme.safeParse(message)
 
     if (!result.success) {
-      toast.error('An error has ocurred', {
+      return toast.error('An error has ocurred', {
         description: result.error.issues
           .map((issue) => issue.message)
           .join(', '),
         position: 'top-right',
         duration: 5000
       })
-      return
     }
-    setChatData([...chatData, result.data])
-
-    const sendDataToEngine = {
-      engine,
-      chatData
-    }
-    const reply = await engineCreateChat(sendDataToEngine)
-
-    if (!reply) return
-    setContentChunk(reply)
-    const botMessage: ChatType = {
-      role: 'system',
-      content: contentChunk
-    }
-    setChatData((prevState) => [...prevState, botMessage])
+    setChatData((prevState) => [...prevState, result.data])
   }
 
   const isProgress =
@@ -77,7 +71,6 @@ export function Chat({ engine, loading, progress }: Props) {
         <Card className={cn(errors.content && 'border-red-500')}>
           <ChatField
             chatData={chatData}
-            contentChunk={contentChunk}
             loading={loading}
           />
 

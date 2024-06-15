@@ -3,10 +3,9 @@ import type { Chat } from '@/types'
 
 type Props = {
   data: Chat
-  contentChunk: string
 }
 
-export function ChatPanel({ data, contentChunk }: Props) {
+export function ChatPanel({ data }: Props) {
   return (
     <article
       className={`flex flex-col gap-y-2 ${data.role === 'user' ? 'items-end' : 'items-start'}`}
@@ -27,7 +26,7 @@ export function ChatPanel({ data, contentChunk }: Props) {
         <p
           className={`${data.role === 'user' ? 'bg-sky-600 dark:bg-primary text-white text-end' : 'bg-gray-300 dark:bg-secondary'} py-2 px-5 rounded-xl`}
         >
-          {data.content ? data.content : contentChunk}
+          {data.content}
         </p>
       </div>
     </article>
